@@ -1,20 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import { Chart } from 'chart.js'
+import * as Chart from 'chart.js'
 import './App.css'
 
-declare global {
-  interface Window {
-    Chart: typeof Chart
-  }
-}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = React.useState(0)
 
   React.useEffect(() => {
-    console.log(Chart)
+    console.log(Chart.Tooltip)
   }, [])
 
   return (
