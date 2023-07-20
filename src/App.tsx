@@ -56,10 +56,11 @@ const App: React.FC = () => {
     value: string | number,
     actionCreator: ActionCreator
   ) => {
-    if (Number.isNaN(parseFloat(value.toString()))) {
+    const parsedValued = parseFloat(value.toString())
+    if (Number.isNaN(parsedValued)) {
       return
     } else {
-      dispatch(actionCreator(value))
+      dispatch(actionCreator(parsedValued))
     }
   }
 
