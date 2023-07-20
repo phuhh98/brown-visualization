@@ -21,11 +21,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "chart.js": [
-        "https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"
-      ]
-    }
   },
   "include": [
     "src"

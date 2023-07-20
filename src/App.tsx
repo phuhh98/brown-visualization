@@ -1,40 +1,135 @@
 import React from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import * as Chart from 'chart.js'
 import './App.css'
+import BrownChart from './components/BrownChart'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from './app/store'
+import { random } from './math/random'
+import { Point } from 'chart.js'
+import {
+  BrownDataState,
+  play,
+  resetData,
+  setData,
+  setIntervalMilisec,
+  setMaxX,
+  setMaxY,
+  setMinX,
+  setMinY,
+} from './app/brownDataSlice'
+import Input from './components/Input'
 
-
-function App() {
-  const [count, setCount] = React.useState(0)
+const App: React.FC = () => {
+  const data = useSelector((state: RootState) => state.brownData)
+  const dispatch = useDispatch()
 
   React.useEffect(() => {
-    console.log(Chart.Tooltip)
-  }, [])
+    const updateNextPoint = () => {
+      const plotData = data.dataPoints
+      const lastPoint = plotData[plotData.length - 1]
+      const nextPoint: Point = {
+        x: lastPoint.x + random.real(data.minX, data.maxX),
+        y: lastPoint.y + random.real(data.minX, data.maxY),
+      }
+
+      const newPlotData: BrownDataState = {
+        ...data,
+        dataPoints: [...plotData, nextPoint],
+      }
+
+      dispatch(setData(newPlotData))
+    }
+    let intervalId: NodeJS.Timer
+
+    if (data.play) {
+      intervalId = setInterval(() => updateNextPoint(), data.intervalInMiliSec)
+    }
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  })
+
+  type ActionCreator = <T extends unknown>(
+    payload: T
+  ) => { type: string; payload: T }
+  const dispatchUpdateWithNumber = (
+    value: string | number,
+    actionCreator: ActionCreator
+  ) => {
+    if (Number.isNaN(parseFloat(value.toString()))) {
+      return
+    } else {
+      dispatch(actionCreator(value))
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <React.Fragment>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <button
+            onClick={() => {
+              dispatch(play())
+            }}
+            style={{ background: 'green', color: 'white' }}
+          >
+            Play
+          </button>
+          <button
+            onClick={() => {
+              dispatch(resetData())
+            }}
+            style={{ background: 'brown', color: 'white', marginTop: '10px' }}
+          >
+            Clear
+          </button>
+          <Input
+            label="Interval milisec"
+            name="interval"
+            placeHolder={data.intervalInMiliSec.toString()}
+            onChange={(value) =>
+              dispatchUpdateWithNumber(value, setIntervalMilisec)
+            }
+          />
+          <Input
+            label="Min X"
+            name="minX"
+            placeHolder={data.minX.toString()}
+            onChange={(value) => {
+              dispatchUpdateWithNumber(value, setMinX)
+            }}
+          />
+          <Input
+            label="Max X"
+            name="maxX"
+            placeHolder={data.maxX.toString()}
+            onChange={(value) => {
+              dispatchUpdateWithNumber(value, setMaxX)
+            }}
+          />
+          <Input
+            label="Min Y"
+            name="minY"
+            placeHolder={data.minY.toString()}
+            onChange={(value) => {
+              dispatchUpdateWithNumber(value, setMinY)
+            }}
+          />
+          <Input
+            label="Max Y"
+            name="maxY"
+            placeHolder={data.maxX.toString()}
+            onChange={(value) => {
+              dispatchUpdateWithNumber(value, setMaxY)
+            }}
+          />
+        </div>
+
+        <div>
+          <BrownChart dataPoints={data.dataPoints} />
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </React.Fragment>
   )
 }
 
