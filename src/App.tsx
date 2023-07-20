@@ -28,7 +28,7 @@ const App: React.FC = () => {
       const lastPoint = plotData[plotData.length - 1]
       const nextPoint: Point = {
         x: lastPoint.x + random.real(data.minX, data.maxX),
-        y: lastPoint.y + random.real(data.minX, data.maxY),
+        y: lastPoint.y + random.real(data.minY, data.maxY),
       }
 
       const newPlotData: BrownDataState = {
@@ -73,7 +73,7 @@ const App: React.FC = () => {
             }}
             style={{ background: 'green', color: 'white' }}
           >
-            Play
+            {data.play ? 'Pause' : 'Play'}
           </button>
           <button
             onClick={() => {
